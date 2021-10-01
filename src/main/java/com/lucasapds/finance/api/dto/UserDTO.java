@@ -1,15 +1,13 @@
 package com.lucasapds.finance.api.dto;
 
 import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 @Builder
 public class UserDTO {
 
-	private String email;
 	private String name;
+	private String email;
 	private String password;
 }

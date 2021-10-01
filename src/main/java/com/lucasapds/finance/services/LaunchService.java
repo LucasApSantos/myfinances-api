@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.lucasapds.finance.entities.Launch;
 import com.lucasapds.finance.enums.LaunchStatus;
+import com.lucasapds.finance.enums.LaunchType;
 import com.lucasapds.finance.exception.RusinessRuleException;
 import com.lucasapds.finance.repositories.LaunchRepository;
 
@@ -21,6 +22,7 @@ import com.lucasapds.finance.repositories.LaunchRepository;
 public class LaunchService {
 
 	private LaunchRepository repository;
+	
 
 	@Autowired
 	public LaunchService(LaunchRepository repository) {
@@ -61,7 +63,7 @@ public class LaunchService {
 	@Transactional(readOnly = true)
 	public List<Launch> search(Launch launch) {
 
-		Example example = Example.of(launch,
+		Example<Launch> example = Example.of(launch,
 				ExampleMatcher.matching().withIgnoreCase().withStringMatcher(StringMatcher.CONTAINING));
 
 		return repository.findAll(example);
@@ -96,5 +98,25 @@ public class LaunchService {
 			throw new RusinessRuleException("Informe um tipo de lançamento");
 		}
 	}
+	
+	public Optional<Launch> getById(Long id){
+		return repository.findById(id);
+	}
+	
+	@Transactional(readOnly = true)
+	public BigDecimal getBanlanceByUser(Long id) {
+		BigDecimal revenues = repository.getBalanceByLaunchTypeAndUser(id, LaunchType.REVENUE);
+		BigDecimal expenditure = repository.getBalanceByLaunchTypeAndUser(id, LaunchType.EXPENSE);
+		
+		if(revenues == null) {
+			revenues = BigDecimal.ZERO;
+		}
+		
+		if(expenditure == null) {
+			expenditure = BigDecimal.ZERO;
+		}
+		
+		return revenues.subtract(expenditure);
 
+}
 }
